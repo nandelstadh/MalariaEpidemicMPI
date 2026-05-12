@@ -7,7 +7,6 @@
 #include <time.h>
 
 #include "prop.h"
-#define NUM_BUCKETS 20
 
 double gillespie(int* x, double* w, const int P[15][7]) {
     prop(x, w);
@@ -34,7 +33,7 @@ double gillespie(int* x, double* w, const int P[15][7]) {
     return tau;
 };
 
-void histogram(int n, int X[n][7]) {
+void histogram(int n, int X[n][7], int hist[NUM_BUCKETS], int* gmax, int* gmin) {
     int max, min;
     max = X[0][0];
     min = X[0][0];
@@ -47,14 +46,13 @@ void histogram(int n, int X[n][7]) {
     MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
     MPI_Comm_rank(MPI_COMM_WORLD, &myid);
 
-    int gmax, gmin;
-    MPI_Reduce(&max, &gmax, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
-    MPI_Reduce(&min, &gmin, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&max, gmax, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&min, gmin, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
 
-    MPI_Bcast(&gmax, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&gmin, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(gmax, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(gmin, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-    double bucket_width = ((double)(gmax - gmin)) / NUM_BUCKETS;
+    double bucket_width = ((double)(*gmax - *gmin)) / NUM_BUCKETS;
     if (bucket_width == 0) {
         printf("gmin == gmax, something went wrong\n");
         return;
@@ -64,7 +62,7 @@ void histogram(int n, int X[n][7]) {
 
     // Fill histogram
     for (size_t i = 0; i < n; i++) {
-        int index = (int)((X[i][0] - gmin) / bucket_width);
+        int index = (int)((X[i][0] - *gmin) / bucket_width);
 
         // Ensure max value goes into last bucket
         if (index == NUM_BUCKETS)
@@ -73,12 +71,33 @@ void histogram(int n, int X[n][7]) {
         buckets[index]++;
     }
 
-    int global_buckets[NUM_BUCKETS];
-    MPI_Reduce(&buckets, &global_buckets, NUM_BUCKETS, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&buckets, hist, NUM_BUCKETS, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
     if (myid == 0) {
+        printf("Min: %d, Max: %d\n", *gmin, *gmax);
         for (int i = 0; i < NUM_BUCKETS; i++) {
-            printf("%d ", global_buckets[i]);
+            printf("%d ", hist[i]);
         }
         printf("\n");
+    }
+}
+
+void plot(int hist[NUM_BUCKETS], int gmax, int gmin) {
+    int n_procs, myid;
+    MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
+    MPI_Comm_rank(MPI_COMM_WORLD, &myid);
+
+    FILE* f = fopen("data/histogram.csv", "w");
+    fprintf(f, "left,right,count\n");
+    double bw = (double)(gmax - gmin) / NUM_BUCKETS;
+    for (int i = 0; i < NUM_BUCKETS; i++) {
+        double left = gmin + i * bw;
+        double right = left + bw;
+        fprintf(f, "%.10f,%.10f,%d\n", left, right, hist[i]);
+    }
+    fclose(f);
+
+    if (PLOT) {
+        int rc = system("python plot_hist.py");
+        if (rc != 0) fprintf(stderr, "plot script failed\n");
     }
 }

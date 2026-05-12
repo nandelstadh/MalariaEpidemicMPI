@@ -39,7 +39,10 @@ int main(int argc, char** argv) {
     int (*X)[7] = malloc(sizeof(*X) * n);
     double w[15];
     double t = 0;
+    int hist[NUM_BUCKETS];
+    int gmax, gmin;
 
+    double start = MPI_Wtime();
     for (int i = 0; i < n; i++) {
         X[i][0] = 900;
         X[i][1] = 900;
@@ -53,13 +56,20 @@ int main(int argc, char** argv) {
         while (t < T) {
             t += gillespie(X[i], w, P);
         }
-        /* for (int j = 0; j < 7; j++) { */
-        /*     printf("%d ", X[i][j]); */
-        /* } */
-        /* printf("\n"); */
     }
 
-    histogram(n, X);
+    histogram(n, X, hist, &gmax, &gmin);
+    double time = MPI_Wtime() - start;
+    double maxtime;
+    MPI_Reduce(&time, &maxtime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+
+    if (myid == 0) {
+        printf("Time: %f\n", maxtime);
+    }
+
+    if (myid == 0) {
+        plot(hist, gmax, gmin);
+    }
     MPI_Finalize();
     free(X);
     return 0;
