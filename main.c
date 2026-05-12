@@ -3,16 +3,22 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "gillespie.h"
 #include "prop.h"
+#include "utils.h"
 
 int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
     if (argc != 2) {
         printf("Expected: main n\n");
         return -1;
     }
     int n = atoi(argv[1]);
-    srand(time(0));
+    int n_procs, myid;
+    MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
+    MPI_Comm_rank(MPI_COMM_WORLD, &myid);
+
+    unsigned int seed = (unsigned int)time(NULL) ^ (unsigned int)(myid * 0x9e3779b9u);
+    srand(seed);
     const int P[15][7] = {
         {1, 0, 0, 0, 0, 0, 0},
         {-1, 0, 0, 0, 0, 0, 0},
@@ -30,7 +36,7 @@ int main(int argc, char** argv) {
         {1, 0, 0, 0, 0, 0, -1},
         {0, 0, 0, 0, 0, 0, -1}};
     const int T = 100;
-    int X[n][7];
+    int (*X)[7] = malloc(sizeof(*X) * n);
     double w[15];
     double t = 0;
 
@@ -47,10 +53,14 @@ int main(int argc, char** argv) {
         while (t < T) {
             t += gillespie(X[i], w, P);
         }
-        for (int j = 0; j < 7; j++) {
-            printf("%d ", X[i][j]);
-        }
-        printf("\n");
+        /* for (int j = 0; j < 7; j++) { */
+        /*     printf("%d ", X[i][j]); */
+        /* } */
+        /* printf("\n"); */
     }
+
+    histogram(n, X);
+    MPI_Finalize();
+    free(X);
     return 0;
 }

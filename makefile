@@ -4,8 +4,8 @@ BINS = main
 
 all: $(BINS)
 
-main: main.c gillespie.h gillespie.c prop.h prop.c
-	$(CC) $(CFLAGS) -o main main.c gillespie.c prop.c
+main: main.c utils.h utils.c prop.h prop.c
+	$(CC) $(CFLAGS) -o main main.c utils.c prop.c
 
 clean:
 	$(RM) $(BINS)
