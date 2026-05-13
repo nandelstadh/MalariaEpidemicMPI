@@ -73,7 +73,7 @@ void histogram(int n, int X[n][7], int hist[NUM_BUCKETS], int* gmax, int* gmin) 
 
     MPI_Reduce(&buckets, hist, NUM_BUCKETS, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
     if (myid == 0) {
-        printf("Min: %d, Max: %d\n", *gmin, *gmax);
+        /* printf("Min: %d, Max: %d\n", *gmin, *gmax); */
         /* for (int i = 0; i < NUM_BUCKETS; i++) { */
         /*     printf("%d ", hist[i]); */
         /* } */

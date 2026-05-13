@@ -10,3 +10,4 @@ main: main.c utils.h utils.c prop.h prop.c
 clean:
 	$(RM) $(BINS)
 	rm -rf *.dSYM
+	rm main_asan

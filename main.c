@@ -11,13 +11,18 @@ int main(int argc, char** argv) {
         printf("Expected: main n\n");
         return -1;
     }
-    int n = atoi(argv[1]);
+    int N = atoi(argv[1]);
 
     // Initializing MPI stuff
     MPI_Init(&argc, &argv);
     int n_procs, myid;
     MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
     MPI_Comm_rank(MPI_COMM_WORLD, &myid);
+    if (N % n_procs != 0) {
+        printf("Number of processes should divide N\n");
+        return -1;
+    }
+    int n = N / n_procs;
 
     // Initializing seed anv variables
     unsigned int seed = (unsigned int)time(NULL) ^ (unsigned int)(myid * 0x9e3779b9u);
@@ -102,6 +107,7 @@ int main(int argc, char** argv) {
 
     // Local computations of times on root, and printing+plotting
     if (myid == 0) {
+        printf("%d %d ", gmin, gmax);
         for (int p = 0; p < n_procs; p++) {
             for (int i = 0; i < 4; i++) {
                 global_times[i] += all_times[p][i];
@@ -112,9 +118,9 @@ int main(int argc, char** argv) {
             global_times[i] = global_times[i] / (n_procs * n);
             printf("%f ", global_times[i]);
         }
-        printf("\n");
 
-        printf("Time: %f\n", maxtime);
+        printf("%f ", maxtime);
+        printf("%d %d\n", N, n_procs);
 
         plot(hist, gmax, gmin);
     }
