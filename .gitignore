@@ -1,5 +1,8 @@
 main
 main_asan
 *.dSYM
-data
-results
+data/*
+results/*
+
+!data/.gitkeep
+!results/.gitkeep
