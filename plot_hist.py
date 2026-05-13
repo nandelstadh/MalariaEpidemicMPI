@@ -1,12 +1,29 @@
+import csv
+from datetime import datetime
+from pathlib import Path
+
 import matplotlib.pyplot as plt
-import pandas as pd
 
-df = pd.read_csv("data/histogram.csv")
-centers = (df["left"] + df["right"]) / 2
-widths = df["right"] - df["left"]
+csv_path = Path("data/histogram.csv")
 
-plt.bar(centers, df["count"], width=widths, align="center", edgecolor="black")
-plt.xlabel("X[0]")
-plt.ylabel("Count")
+centers = []
+widths = []
+counts = []
+
+with csv_path.open(newline="", encoding="utf-8") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        left = float(row["left"])
+        right = float(row["right"])
+        centers.append((left + right) / 2.0)
+        widths.append(right - left)
+        counts.append(int(row["count"]))
+
+plt.bar(centers, counts, width=widths, align="center", edgecolor="black")
+plt.xlabel("susceptible humans")
+plt.ylabel("number of simulations")
 plt.tight_layout()
-plt.show()
+
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+output_path = Path("data") / f"histogram_{timestamp}.png"
+plt.savefig(output_path, dpi=150)
