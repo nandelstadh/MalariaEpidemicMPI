@@ -10,12 +10,12 @@ Everything has been tested and should run without problems on new versions MacOS
 Dependencies are
 
 ```
+GCC
 OpenMPI
 Python
 Matplotlib
 ```
-
-If running the slurm script on Pelle, it will make sure that these modules are loaded.
+Make sure that these modules are loaded before running the program or any script which calls the program.
 
 ### Build
 To download and make the executable, simply run
@@ -56,9 +56,17 @@ To run a small battery of simulations (this requries 32 available cores, and the
 
 ```
 $ cd scripts
+$ chmod u+x demonstrations.sh
 $ ./demonstrations.sh
 ```
 
 This will run the program three different times with N=10^7, N=20^7 and N=40^7 simulations respectively. The histograms are then found in the folder data, and the output in the folder results.
 
+Note that on Pelle, you might get an error like
+
+```
+$ osc_ucx_component.c:369  Error: OSC UCX component priority set inside component query failed
+```
+
+But this just means that OpenMPI uses a different backend, and should not affect the accuracy of results.
 

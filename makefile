@@ -5,7 +5,7 @@ BINS = main
 all: $(BINS)
 
 main: main.c utils.h utils.c prop.h prop.c
-	$(CC) $(CFLAGS) -o main main.c utils.c prop.c
+	$(CC) $(CFLAGS) -o main main.c utils.c prop.c -lm
 
 clean:
 	$(RM) $(BINS)

@@ -2,7 +2,7 @@
 
 cd ..
 OUT="results/local_weak_scale.csv"
-echo "min max t25 t50 t75 t100 tmax N p" > "$OUT"
+echo "min max t25 t50 t75 t100 tmax n p" > "$OUT"
 
 N=(100000 200000 400000 800000 1100000)
 P=(1 2 4 8 11)
@@ -13,7 +13,7 @@ for i in "${!N[@]}"; do
 done
 
 OUT="results/local_strong_scale.csv"
-echo "min max t25 t50 t75 t100 tmax N p" > "$OUT"
+echo "min max t25 t50 t75 t100 tmax n p" > "$OUT"
 
 P=(1 2 4 8)
 

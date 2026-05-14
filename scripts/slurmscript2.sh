@@ -2,6 +2,6 @@
 #SBATCH -A uppmax2026-1-31
 #SBATCH -N 1
 #SBATCH --exclusive
-#SBATCH --time=00:10:00
+#SBATCH --time=01:00:00
 
-./demonstration.sh
+./tests.sh

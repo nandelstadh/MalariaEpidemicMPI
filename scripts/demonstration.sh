@@ -2,7 +2,7 @@
 
 cd ..
 OUT="results/demonstration.csv"
-echo "min max t25 t50 t75 t100 tmax N p" > "$OUT"
+echo "min max t25 t50 t75 t100 tmax n p" > "$OUT"
 
 N=(1000000 2000000 4000000)
 
