@@ -56,11 +56,11 @@ To run a small battery of simulations (this requries 32 available cores, and the
 
 ```
 $ cd scripts
-$ chmod u+x demonstrations.sh
-$ ./demonstrations.sh
+$ chmod u+x demonstration.sh
+$ ./demonstration.sh
 ```
 
-This will run the program three different times with N=10^7, N=20^7 and N=40^7 simulations respectively. The histograms are then found in the folder data, and the output in the folder results.
+This will run the program three different times with N=1*10^6, N=2*10^6 and N=4*10^6 simulations respectively. The histograms are then found in the folder data, and the output in the folder results.
 
 Note that on Pelle, you might get an error like
 
