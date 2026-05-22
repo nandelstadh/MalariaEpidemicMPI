@@ -48,11 +48,11 @@ def plot_strong_speedup(rows, output_path: Path):
     ideal_speedup = [proc / p0 for proc in p]
 
     fig, ax = plt.subplots(figsize=(8, 5))
-    ax.plot(p, measured_speedup, "o-", label="measured time")
+    ax.plot(p, measured_speedup, "o-", label="measured speedup")
     ax.plot(p, ideal_speedup, "--", label="ideal")
     ax.set_title("Strong scaling")
     ax.set_xlabel("number of processes (p)")
-    ax.set_ylabel("time (s)")
+    ax.set_ylabel("speedup")
     ax.grid(True, alpha=0.3)
     ax.legend()
     fig.tight_layout()
