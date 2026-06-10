@@ -38,7 +38,7 @@ where p is the number of processes and N is the number of times the simulation i
 Other information is printed to the terminal as
 
 ```
-$ min max t25 t50 t75 t100 tmax N P
+$ min max N P tmax
 ```
 
 where
@@ -59,7 +59,7 @@ $ chmod u+x demonstration.sh
 $ ./demonstration.sh
 ```
 
-This will run the program three different times with N=1*10^6, N=2*10^6 and N=4*10^6 simulations respectively. The histograms are then found in the folder data, and the output in the folder results.
+This will run the program three different times with N=1e6, N=2e6 and N=4e6 simulations respectively. The histograms are then found in the folder data, and the output in the folder results.
 
 Note that on Pelle, you might get an error like
 
