@@ -3,6 +3,6 @@
 cd ..
 OUT="results/processor_distribution.csv"
 
-result=$(mpirun ---bind-to cores -np 8 --ntasks-per-node=4 ./main 1000032 1)
+result=$(mpirun --bind-to cores -np 8 --map-by ppr:4:node ./main 1000032 1)
 echo "$result" >> "$OUT"
 
