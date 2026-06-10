@@ -46,11 +46,8 @@ void histogram(int n, int X[n][7], int hist[NUM_BUCKETS], int* gmax, int* gmin) 
     MPI_Comm_size(MPI_COMM_WORLD, &n_procs);
     MPI_Comm_rank(MPI_COMM_WORLD, &myid);
 
-    MPI_Reduce(&max, gmax, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
-    MPI_Reduce(&min, gmin, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
-
-    MPI_Bcast(gmax, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(gmin, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Allreduce(&max, gmax, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
+    MPI_Allreduce(&min, gmin, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
 
     double bucket_width = ((double)(*gmax - *gmin)) / NUM_BUCKETS;
     if (bucket_width == 0) {

@@ -31,10 +31,10 @@ $ make
 Run the executable using 
 
 ```
-$ mpirun -np p ./main N
+$ mpirun -np p ./main N a
 ```
 
-where p is the number of processes and N is the number of times the simulation is run. Note that we require that p divides N. A histogram of the number of susceptible humans at the end of the simulations is then saved in ./data.
+where p is the number of processes and N is the number of times the simulation is run, and a is a boolean representing if the average times per processor and interval should be printed. Note that we require that p divides N. A histogram of the number of susceptible humans at the end of the simulations is then saved in ./data.
 Other information is printed to the terminal as
 
 ```
@@ -45,12 +45,11 @@ where
 
 1. min: left end of histogram
 2. max: right end of historgram
-3. t25: average time taken to simulate the times 0 to 25
-4. t50: average time taken to simulate the times 25 to 50
-5. t75: average time taken to simulate the times 50 to 75
-6. t100: average time taken to simulate the times 75 to 100
-7. N: number of simulations
-8. p: number of processors
+3. N: number of simulations
+4. p: number of processors
+5. tmax: total time taken
+
+If main is called with a=1, a table with columns representing average time per quartile, and row representing processor, is also printed. 
 
 To run a small battery of simulations (this requries 32 available cores, and the ability for MPI to bind cores), run
 
@@ -68,5 +67,5 @@ Note that on Pelle, you might get an error like
 $ osc_ucx_component.c:369  Error: OSC UCX component priority set inside component query failed
 ```
 
-But this just means that OpenMPI uses a different backend, and should not affect the accuracy of results.
+But this just means that OpenMPI uses a different backend, and should not affect the accuracy of results. To get rid of this error, one may also run OpenMPI with the extra flag --mca osc ^ucx.
 

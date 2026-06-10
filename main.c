@@ -7,11 +7,12 @@
 #include "utils.h"
 
 int main(int argc, char** argv) {
-    if (argc != 2) {
-        printf("Expected: main n\n");
+    if (argc != 3) {
+        printf("Expected: main n a\nn: number of simulations\na: 1 to print processor averages, 0 otherwise");
         return -1;
     }
     int N = atoi(argv[1]);
+    int a = atoi(argv[2]);
 
     // Initializing MPI stuff
     MPI_Init(&argc, &argv);
@@ -91,7 +92,6 @@ int main(int argc, char** argv) {
 
     // Reducing interval times
     double all_times[n_procs][4];
-    double global_times[4] = {0};
 
     MPI_Win win_times;
 
@@ -108,21 +108,20 @@ int main(int argc, char** argv) {
     // Local computations of times on root, and printing+plotting
     if (myid == 0) {
         printf("%d %d ", gmin, gmax);
-        for (int p = 0; p < n_procs; p++) {
-            for (int i = 0; i < 4; i++) {
-                global_times[i] += all_times[p][i];
+        printf("%d %d ", N, n_procs);
+        printf("%f ", maxtime);
+        plot(hist, gmax, gmin);
+        printf("\n");
+
+        if (a == 1) {
+            for (int p = 0; p < n_procs; p++) {
+                for (int i = 0; i < 4; i++) {
+                    double average = all_times[p][i] / n;
+                    printf("%f ", average);
+                }
+                printf("\n");
             }
         }
-
-        for (int i = 0; i < 4; i++) {
-            global_times[i] = global_times[i] / (n_procs * n);
-            printf("%f ", global_times[i]);
-        }
-
-        printf("%f ", maxtime);
-        printf("%d %d\n", N, n_procs);
-
-        plot(hist, gmax, gmin);
     }
 
     // Freeing memory
